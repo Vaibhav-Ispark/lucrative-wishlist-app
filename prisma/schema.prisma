@@ -32,3 +32,40 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  shop      String
+  ownerKey  String
+  customerId String?
+  guestId   String?
+  productId String
+  variantId String?
+  handle    String?
+  title     String
+  image     String?
+  url       String?
+  price     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([shop, ownerKey, productId])
+  @@index([shop, createdAt])
+  @@index([shop, productId])
+  @@index([shop, customerId])
+}
+
+model WishlistSettings {
+  id                    String   @id @default(cuid())
+  shop                  String   @unique
+  iconStyle             String   @default("outline")
+  customSvg             String?
+  buttonPosition        String   @default("top-right")
+  primaryColor          String   @default("#e11d48")
+  iconSize              Int      @default(22)
+  hoverEffect           String   @default("scale")
+  guestWishlistEnabled  Boolean  @default(true)
+  wishlistPageVisible   Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}

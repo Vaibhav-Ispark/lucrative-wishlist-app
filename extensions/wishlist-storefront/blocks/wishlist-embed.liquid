@@ -1,0 +1,106 @@
+{{ 'lucrative-wishlist.css' | asset_url | stylesheet_tag }}
+
+<script>
+  window.LucrativeWishlistConfig = {
+    shop: {{ shop.permanent_domain | json }},
+    customerId: {% if customer %}{{ customer.id | json }}{% else %}null{% endif %},
+    apiUrl: {{ block.settings.api_url | json }},
+    iconStyle: {{ block.settings.icon_style | json }},
+    customSvg: {{ block.settings.custom_svg | json }},
+    buttonPosition: {{ block.settings.button_position | json }},
+    primaryColor: {{ block.settings.primary_color | json }},
+    iconSize: {{ block.settings.icon_size | json }},
+    hoverEffect: {{ block.settings.hover_effect | json }},
+    guestWishlistEnabled: {{ block.settings.guest_wishlist_enabled | json }},
+    wishlistPageVisible: {{ block.settings.wishlist_page_visible | json }},
+    wishlistPagePath: {{ block.settings.wishlist_page_path | json }}
+  };
+</script>
+<script src="{{ 'lucrative-wishlist.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Wishlist app embed",
+  "target": "body",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "API URL",
+      "info": "Leave blank when the app proxy uses /apps/wishlist. Otherwise enter your public app URL ending in /api/wishlist."
+    },
+    {
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon style",
+      "default": "outline",
+      "options": [
+        { "value": "outline", "label": "Outline" },
+        { "value": "filled", "label": "Filled" },
+        { "value": "custom", "label": "Custom SVG" }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "custom_svg",
+      "label": "Custom SVG"
+    },
+    {
+      "type": "select",
+      "id": "button_position",
+      "label": "Product card button position",
+      "default": "top-right",
+      "options": [
+        { "value": "top-right", "label": "Top right" },
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "inline", "label": "Inline" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Wishlist color",
+      "default": "#e11d48"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover effect",
+      "default": "scale",
+      "options": [
+        { "value": "scale", "label": "Scale" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "guest_wishlist_enabled",
+      "label": "Enable guest wishlists",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "wishlist_page_visible",
+      "label": "Render wishlist page",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "wishlist_page_path",
+      "label": "Wishlist page path",
+      "default": "/pages/wishlist"
+    }
+  ]
+}
+{% endschema %}
