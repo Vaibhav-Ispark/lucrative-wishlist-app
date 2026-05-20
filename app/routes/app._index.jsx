@@ -135,7 +135,7 @@ export default function Dashboard() {
             </s-text>
           </s-box>
           <s-box padding="base" borderWidth="base" borderRadius="base">
-            <s-heading>Active customers</s-heading>
+            <s-heading>Active shoppers</s-heading>
             <s-text type="strong">{customerActivity.length}</s-text>
           </s-box>
         </s-grid>
@@ -205,6 +205,7 @@ export default function Dashboard() {
             <s-table-header>Product</s-table-header>
             <s-table-header>Customer</s-table-header>
             <s-table-header>Price</s-table-header>
+            <s-table-header>Compare at</s-table-header>
             <s-table-header>Date</s-table-header>
           </s-table-header-row>
           <s-table-body>
@@ -213,6 +214,7 @@ export default function Dashboard() {
                 <s-table-cell>{item.title}</s-table-cell>
                 <s-table-cell>{formatOwner(item.ownerKey)}</s-table-cell>
                 <s-table-cell>{item.price || "N/A"}</s-table-cell>
+                <s-table-cell>{item.compareAtPrice || "N/A"}</s-table-cell>
                 <s-table-cell>
                   {new Date(item.createdAt).toLocaleDateString()}
                 </s-table-cell>
@@ -222,67 +224,16 @@ export default function Dashboard() {
         </s-table>
       </s-section>
 
-      <s-section heading="Storefront settings">
+      <s-section heading="Wishlist page settings">
         <Form className="wishlist-admin-settings-form" method="post">
           <HiddenEmbeddedParams params={preservedSearchParams} />
-          <label className="wishlist-admin-field">
-            <span>Icon style</span>
-            <select name="iconStyle" defaultValue={settings.iconStyle}>
-              <option value="outline">Outline</option>
-              <option value="filled">Filled</option>
-              <option value="custom">Custom SVG</option>
-            </select>
-          </label>
-          <label className="wishlist-admin-field wishlist-admin-field--wide">
-            <span>Custom SVG</span>
-            <textarea
-              name="customSvg"
-              defaultValue={settings.customSvg || ""}
-              rows={4}
-              placeholder="<svg>...</svg>"
-            />
-          </label>
-          <label className="wishlist-admin-field">
-            <span>Button position</span>
-            <select name="buttonPosition" defaultValue={settings.buttonPosition}>
-              <option value="top-right">Top right</option>
-              <option value="bottom">Bottom</option>
-              <option value="inline">Inline</option>
-            </select>
-          </label>
-          <label className="wishlist-admin-field">
-            <span>Brand color</span>
-            <input
-              name="primaryColor"
-              type="color"
-              defaultValue={settings.primaryColor}
-            />
-          </label>
-          <label className="wishlist-admin-field">
-            <span>Icon size</span>
-            <input
-              name="iconSize"
-              type="number"
-              min="16"
-              max="40"
-              defaultValue={String(settings.iconSize)}
-            />
-          </label>
-          <label className="wishlist-admin-field">
-            <span>Hover effect</span>
-            <select name="hoverEffect" defaultValue={settings.hoverEffect}>
-              <option value="scale">Scale</option>
-              <option value="lift">Lift</option>
-              <option value="none">None</option>
-            </select>
-          </label>
           <label className="wishlist-admin-toggle">
             <input
               name="guestWishlistEnabled"
               type="checkbox"
               defaultChecked={settings.guestWishlistEnabled}
             />
-            <span>Enable guest wishlist</span>
+            <span>Allow guests to wishlist products</span>
           </label>
           <label className="wishlist-admin-toggle">
             <input

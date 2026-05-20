@@ -38,7 +38,6 @@ model WishlistItem {
   shop      String
   ownerKey  String
   customerId String?
-  guestId   String?
   productId String
   variantId String?
   handle    String?
@@ -46,6 +45,7 @@ model WishlistItem {
   image     String?
   url       String?
   price     String?
+  compareAtPrice String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -58,13 +58,7 @@ model WishlistItem {
 model WishlistSettings {
   id                    String   @id @default(cuid())
   shop                  String   @unique
-  iconStyle             String   @default("outline")
-  customSvg             String?
-  buttonPosition        String   @default("top-right")
-  primaryColor          String   @default("#e11d48")
-  iconSize              Int      @default(22)
-  hoverEffect           String   @default("scale")
-  guestWishlistEnabled  Boolean  @default(true)
+  guestWishlistEnabled  Boolean  @default(false)
   wishlistPageVisible   Boolean  @default(true)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

@@ -1,13 +1,7 @@
 import db from "../db.server";
 
 export const DEFAULT_WISHLIST_SETTINGS = {
-  iconStyle: "outline",
-  customSvg: "",
-  buttonPosition: "top-right",
-  primaryColor: "#e11d48",
-  iconSize: 22,
-  hoverEffect: "scale",
-  guestWishlistEnabled: true,
+  guestWishlistEnabled: false,
   wishlistPageVisible: true,
 };
 
@@ -26,28 +20,14 @@ export async function getWishlistSettings(shop) {
 }
 
 export async function saveWishlistSettings(shop, formData) {
-  const iconSize = Number(formData.get("iconSize"));
-
   return db.wishlistSettings.upsert({
     where: { shop },
     create: {
       shop,
-      iconStyle: String(formData.get("iconStyle") || "outline"),
-      customSvg: String(formData.get("customSvg") || ""),
-      buttonPosition: String(formData.get("buttonPosition") || "top-right"),
-      primaryColor: String(formData.get("primaryColor") || "#e11d48"),
-      iconSize: Number.isFinite(iconSize) ? iconSize : 22,
-      hoverEffect: String(formData.get("hoverEffect") || "scale"),
       guestWishlistEnabled: formData.get("guestWishlistEnabled") === "on",
       wishlistPageVisible: formData.get("wishlistPageVisible") === "on",
     },
     update: {
-      iconStyle: String(formData.get("iconStyle") || "outline"),
-      customSvg: String(formData.get("customSvg") || ""),
-      buttonPosition: String(formData.get("buttonPosition") || "top-right"),
-      primaryColor: String(formData.get("primaryColor") || "#e11d48"),
-      iconSize: Number.isFinite(iconSize) ? iconSize : 22,
-      hoverEffect: String(formData.get("hoverEffect") || "scale"),
       guestWishlistEnabled: formData.get("guestWishlistEnabled") === "on",
       wishlistPageVisible: formData.get("wishlistPageVisible") === "on",
     },
@@ -61,83 +41,67 @@ export async function listWishlistItems(shop, ownerKey) {
   });
 }
 
+function cleanOptionalString(value) {
+  const normalized = String(value || "").replace(/\s+/g, " ").trim();
+  return normalized || null;
+}
+
+function getWishlistItemData(payload) {
+  const price = cleanOptionalString(payload.price);
+  const compareAtPrice = cleanOptionalString(payload.compareAtPrice);
+  const productId = cleanOptionalString(payload.productId) || cleanOptionalString(payload.handle);
+
+  return {
+    customerId: cleanOptionalString(payload.customerId),
+    productId,
+    variantId: cleanOptionalString(payload.variantId),
+    handle: cleanOptionalString(payload.handle),
+    title: cleanOptionalString(payload.title) || "Untitled product",
+    image: cleanOptionalString(payload.image),
+    url: cleanOptionalString(payload.url),
+    price,
+    compareAtPrice: compareAtPrice && compareAtPrice !== price ? compareAtPrice : null,
+  };
+}
+
 export async function addWishlistItem(shop, ownerKey, payload) {
+  const itemData = getWishlistItemData(payload);
+
   return db.wishlistItem.upsert({
     where: {
       shop_ownerKey_productId: {
         shop,
         ownerKey,
-        productId: String(payload.productId),
+        productId: itemData.productId,
       },
     },
     create: {
       shop,
       ownerKey,
-      customerId: payload.customerId ? String(payload.customerId) : null,
-      guestId: payload.guestId ? String(payload.guestId) : null,
-      productId: String(payload.productId),
-      variantId: payload.variantId ? String(payload.variantId) : null,
-      handle: payload.handle ? String(payload.handle) : null,
-      title: String(payload.title || "Untitled product"),
-      image: payload.image ? String(payload.image) : null,
-      url: payload.url ? String(payload.url) : null,
-      price: payload.price ? String(payload.price) : null,
+      ...itemData,
     },
-    update: {
-      customerId: payload.customerId ? String(payload.customerId) : null,
-      guestId: payload.guestId ? String(payload.guestId) : null,
-      variantId: payload.variantId ? String(payload.variantId) : null,
-      handle: payload.handle ? String(payload.handle) : null,
-      title: String(payload.title || "Untitled product"),
-      image: payload.image ? String(payload.image) : null,
-      url: payload.url ? String(payload.url) : null,
-      price: payload.price ? String(payload.price) : null,
-    },
+    update: itemData,
   });
 }
 
-export async function removeWishlistItem(shop, ownerKey, productId) {
+export async function removeWishlistItem(shop, ownerKey, payload) {
+  const productId = String(payload.productId || "");
+  const handle = payload.handle ? String(payload.handle) : null;
+  const url = payload.url ? String(payload.url) : null;
+  const matchers = [
+    productId ? { productId } : null,
+    handle ? { productId: handle } : null,
+    handle ? { handle } : null,
+    url ? { url } : null,
+  ].filter(Boolean);
+
+  if (!matchers.length) return;
+
   await db.wishlistItem.deleteMany({
-    where: { shop, ownerKey, productId: String(productId) },
+    where: {
+      shop,
+      ownerKey,
+      OR: matchers,
+    },
   });
-}
-
-export async function syncGuestWishlistToCustomer(shop, guestOwnerKey, customerOwnerKey) {
-  const guestItems = await db.wishlistItem.findMany({
-    where: { shop, ownerKey: guestOwnerKey },
-  });
-
-  await Promise.all(
-    guestItems.map((item) =>
-      db.wishlistItem.upsert({
-        where: {
-          shop_ownerKey_productId: {
-            shop,
-            ownerKey: customerOwnerKey,
-            productId: item.productId,
-          },
-        },
-        create: {
-          shop,
-          ownerKey: customerOwnerKey,
-          customerId: customerOwnerKey.replace("customer:", ""),
-          productId: item.productId,
-          variantId: item.variantId,
-          handle: item.handle,
-          title: item.title,
-          image: item.image,
-          url: item.url,
-          price: item.price,
-        },
-        update: {
-          title: item.title,
-          image: item.image,
-          url: item.url,
-          price: item.price,
-        },
-      }),
-    ),
-  );
-
-  await db.wishlistItem.deleteMany({ where: { shop, ownerKey: guestOwnerKey } });
 }

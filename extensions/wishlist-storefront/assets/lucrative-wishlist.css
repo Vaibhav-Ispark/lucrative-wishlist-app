@@ -45,16 +45,6 @@
   top: 12px;
 }
 
-.lucrative-wishlist-button--bottom {
-  bottom: 12px;
-  position: absolute;
-  right: 12px;
-}
-
-.lucrative-wishlist-button--inline {
-  margin-block-start: 10px;
-}
-
 .lucrative-wishlist-button--pdp,
 .lucrative-wishlist-pdp-button {
   gap: 8px;
@@ -81,10 +71,6 @@
 
 .lucrative-wishlist-button--hover-scale:hover {
   transform: scale(1.06);
-}
-
-.lucrative-wishlist-button--hover-lift:hover {
-  transform: translateY(-2px);
 }
 
 .lucrative-wishlist-button--loading {
@@ -145,6 +131,48 @@
   border: 1px solid rgb(17 24 39 / 10%);
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
+}
+
+.lucrative-wishlist-item__remove {
+  align-items: center;
+  appearance: none;
+  background: rgb(255 255 255 / 94%);
+  border: 1px solid rgb(17 24 39 / 12%);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+  color: rgb(31 41 55);
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+  width: 34px;
+  z-index: 3;
+}
+
+.lucrative-wishlist-item__remove:hover {
+  color: var(--lucrative-wishlist-color);
+  transform: scale(1.06);
+}
+
+.lucrative-wishlist-item__remove svg {
+  height: 18px;
+  pointer-events: none;
+  width: 18px;
+}
+
+.lucrative-wishlist-item__remove.lucrative-wishlist-button--loading {
+  opacity: 0.58;
+  pointer-events: none;
 }
 
 .lucrative-wishlist-item__media {
@@ -174,36 +202,21 @@
 }
 
 .lucrative-wishlist-item__price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin: 0;
 }
 
-.lucrative-wishlist-item__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.lucrative-wishlist-item__price s,
+.lucrative-wishlist-toast__price s {
+  color: rgb(107 114 128);
 }
 
-.lucrative-wishlist-action {
-  appearance: none;
-  background: var(--lucrative-wishlist-color);
-  border: 1px solid var(--lucrative-wishlist-color);
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.92rem;
-  font-weight: 650;
-  padding: 9px 12px;
-}
-
-.lucrative-wishlist-action--loading {
-  opacity: 0.64;
-  pointer-events: none;
-}
-
-.lucrative-wishlist-action--secondary {
-  background: white;
-  color: rgb(31 41 55);
+.lucrative-wishlist-item__price span,
+.lucrative-wishlist-toast__price span {
+  color: var(--lucrative-wishlist-color);
+  font-weight: 700;
 }
 
 .lucrative-wishlist-empty {
@@ -227,8 +240,8 @@
   color: rgb(17 24 39);
   display: grid;
   gap: 12px;
-  grid-template-columns: 64px minmax(0, 1fr);
-  max-width: min(390px, calc(100vw - 28px));
+  grid-template-columns: 58px minmax(0, 1fr);
+  max-width: min(360px, calc(100vw - 28px));
   opacity: 0;
   padding: 10px;
   pointer-events: none;
@@ -252,10 +265,10 @@
   background: rgb(249 250 251);
   border-radius: 6px;
   display: block;
-  height: 64px;
+  height: 58px;
   object-fit: cover;
   overflow: hidden;
-  width: 64px;
+  width: 58px;
 }
 
 .lucrative-wishlist-toast__image--placeholder {
@@ -274,6 +287,7 @@
   display: grid;
   gap: 3px;
   min-width: 0;
+  overflow: hidden;
 }
 
 .lucrative-wishlist-toast__message {
@@ -295,6 +309,7 @@
   font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.25;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -302,8 +317,15 @@
 
 .lucrative-wishlist-toast__price {
   color: rgb(75 85 99);
+  display: flex;
+  gap: 6px;
   font-size: 0.86rem;
   font-weight: 600;
+  line-height: 1.25;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @keyframes lucrative-wishlist-button-pop {
@@ -347,16 +369,11 @@
 }
 
 @media (max-width: 640px) {
-  .lucrative-wishlist-button--top-right,
-  .lucrative-wishlist-button--bottom {
+  .lucrative-wishlist-button--top-right {
     right: 8px;
   }
 
   .lucrative-wishlist-button--top-right {
     top: 8px;
-  }
-
-  .lucrative-wishlist-button--bottom {
-    bottom: 8px;
   }
 }

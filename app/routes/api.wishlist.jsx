@@ -4,7 +4,6 @@ import {
   getWishlistSettings,
   listWishlistItems,
   removeWishlistItem,
-  syncGuestWishlistToCustomer,
 } from "../models/wishlist.server";
 
 const corsHeaders = {
@@ -25,6 +24,23 @@ function getShop(request) {
   return url.searchParams.get("shop");
 }
 
+function isProductPayload(payload) {
+  const productId = String(payload.productId || "");
+  const handle = String(payload.handle || "");
+  const url = String(payload.url || "");
+
+  return Boolean(productId && (handle || url.includes("/products/")));
+}
+
+function getWishlistOwner(payload, settings) {
+  const ownerKey = getOwnerKey({
+    customerId: payload.customerId,
+    guestId: settings.guestWishlistEnabled ? payload.guestId : null,
+  });
+
+  return ownerKey;
+}
+
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const shop = getShop(request);
@@ -39,10 +55,12 @@ export const loader = async ({ request }) => {
     return json({ settings });
   }
 
-  const ownerKey = getOwnerKey({
+  const settings = await getWishlistSettings(shop);
+
+  const ownerKey = getWishlistOwner({
     customerId: url.searchParams.get("customerId"),
     guestId: url.searchParams.get("guestId"),
-  });
+  }, settings);
 
   if (!ownerKey) {
     return json({ items: [] });
@@ -63,27 +81,25 @@ export const action = async ({ request }) => {
   }
 
   const payload = await request.json();
-  const ownerKey = getOwnerKey(payload);
+  const settings = await getWishlistSettings(shop);
+  const ownerKey = getWishlistOwner(payload, settings);
 
   if (!ownerKey) {
-    return json({ error: "Wishlist owner is required." }, { status: 400 });
-  }
-
-  if (payload.action === "sync" && payload.customerId && payload.guestId) {
-    await syncGuestWishlistToCustomer(
-      shop,
-      getOwnerKey({ guestId: payload.guestId }),
-      getOwnerKey({ customerId: payload.customerId }),
+    return json(
+      { error: settings.guestWishlistEnabled ? "Wishlist owner is required." : "Customer login is required." },
+      { status: 401 },
     );
-    const items = await listWishlistItems(shop, getOwnerKey({ customerId: payload.customerId }));
-    return json({ items });
   }
 
   if (payload.action === "remove") {
-    await removeWishlistItem(shop, ownerKey, payload.productId);
+    await removeWishlistItem(shop, ownerKey, payload);
   }
 
   if (payload.action === "add") {
+    if (!isProductPayload(payload)) {
+      return json({ error: "Only products can be wishlisted." }, { status: 400 });
+    }
+
     await addWishlistItem(shop, ownerKey, payload);
   }
 
