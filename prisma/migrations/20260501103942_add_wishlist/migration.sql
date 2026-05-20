@@ -12,8 +12,8 @@ CREATE TABLE "WishlistItem" (
     "image" TEXT,
     "url" TEXT,
     "price" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL
 );
 
 -- CreateTable
@@ -28,8 +28,8 @@ CREATE TABLE "WishlistSettings" (
     "hoverEffect" TEXT NOT NULL DEFAULT 'scale',
     "guestWishlistEnabled" BOOLEAN NOT NULL DEFAULT true,
     "wishlistPageVisible" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL
 );
 
 -- CreateIndex

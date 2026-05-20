@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "f8c6cd2d7e708eb0bcf0924d18da774b"
-name = "lucrative-wishlist-app"
+name = "Lucrative Wishlist"
 application_url = "https://example.com"
 embedded = true
 
