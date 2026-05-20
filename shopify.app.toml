@@ -2,7 +2,7 @@
 
 client_id = "f8c6cd2d7e708eb0bcf0924d18da774b"
 name = "Lucrative Wishlist"
-application_url = "https://example.com"
+application_url = "https://lucrative-wishlist-app.vercel.app"
 embedded = true
 
 [build]
@@ -24,10 +24,10 @@ api_version = "2026-07"
 scopes = "write_metaobject_definitions,write_metaobjects,write_products"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://lucrative-wishlist-app.vercel.app/api/auth" ]
 
 [app_proxy]
-url = "https://example.com/api/wishlist"
+url = "https://lucrative-wishlist-app.vercel.app/api/wishlist"
 subpath = "wishlist"
 prefix = "apps"
 
